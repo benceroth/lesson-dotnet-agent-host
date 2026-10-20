@@ -23,7 +23,19 @@ public static class NorthstarServiceCollectionExtensions
         services.AddSingleton<ICallerResolver, ConfiguredCallerResolver>();
         services.AddSingleton<ISupportResponder, SupportResponder>();
 
-        services.AddSingleton<IStateStore, InMemoryStateStore>();
+        var provider = configuration["State:Provider"] ?? "InMemory";
+        switch (provider.ToUpperInvariant())
+        {
+            case "INMEMORY":
+                services.AddSingleton<IStateStore, InMemoryStateStore>();
+                break;
+            case "SQLITE":
+                var path = configuration["State:SqlitePath"] ?? "northstar-state.db";
+                services.AddSingleton<IStateStore>(_ => new SqliteStateStore(path));
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown State:Provider '{provider}'. Use InMemory or Sqlite.");
+        }
 
         return services;
     }

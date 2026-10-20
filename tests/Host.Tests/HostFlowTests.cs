@@ -157,6 +157,34 @@ public sealed class HostFlowTests : IDisposable
     }
 
     [Fact]
+    public async Task Sqlite_state_provider_can_be_selected_by_configuration()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, $"host-{Guid.NewGuid():N}.db");
+        try
+        {
+            var settings = new Dictionary<string, string?> { ["State:Provider"] = "Sqlite", ["State:SqlitePath"] = path };
+
+            using (var first = CreateClient(extraSettings: settings))
+            {
+                await PostAsync(first, Activity("message", "m1", "Where is NS-1043?"));
+            }
+
+            // Second host over the same file = restart.
+            using var second = CreateClient(extraSettings: settings);
+            var replies = await PostAsync(second, Activity("message", "m2", "Can I return it?"));
+
+            Assert.Contains("NS-1043 can be returned until", Assert.Single(replies), StringComparison.Ordinal);
+        }
+        finally
+        {
+            foreach (var file in Directory.GetFiles(AppContext.BaseDirectory, Path.GetFileName(path) + "*"))
+            {
+                File.Delete(file);
+            }
+        }
+    }
+
+    [Fact]
     public void Host_refuses_to_start_without_explicit_anonymous_opt_in()
     {
         using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(b =>

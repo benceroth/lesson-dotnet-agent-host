@@ -3,8 +3,20 @@ using Northstar.Agent.State;
 
 namespace Core.Tests;
 
-public class StateStoreTests
+public class StateStoreTests : IDisposable
 {
+    private readonly string _dbPath = Path.Combine(AppContext.BaseDirectory, $"state-{Guid.NewGuid():N}.db");
+
+    public void Dispose()
+    {
+        foreach (var file in Directory.GetFiles(AppContext.BaseDirectory, Path.GetFileName(_dbPath) + "*"))
+        {
+            File.Delete(file);
+        }
+
+        GC.SuppressFinalize(this);
+    }
+
     [Fact]
     public async Task InMemory_roundtrips()
     {
@@ -30,9 +42,35 @@ public class StateStoreTests
     }
 
     [Fact]
+    public async Task Sqlite_roundtrips_and_overwrites()
+    {
+        var store = new SqliteStateStore(_dbPath);
+
+        await store.SaveAsync("c1", new ConversationState("NS-1042", 1), CancellationToken.None);
+        await store.SaveAsync("c1", new ConversationState("NS-1043", 2), CancellationToken.None);
+
+        Assert.Equal(new ConversationState("NS-1043", 2), await store.GetAsync("c1", CancellationToken.None));
+        Assert.Equal(ConversationState.Empty, await store.GetAsync("missing", CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Sqlite_conversation_survives_a_restart()
+    {
+        var beforeRestart = new Chat(state: new SqliteStateStore(_dbPath));
+        await beforeRestart.SayAsync("Where is NS-1043?");
+
+        // New store instance over the same file = new process after a restart.
+        var afterRestart = new Chat(state: new SqliteStateStore(_dbPath));
+        var reply = await afterRestart.SayAsync("Can I return it?");
+
+        Assert.Equal(ReplyRoute.ReturnInfo, reply.Route);
+        Assert.Contains("NS-1043", reply.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Stored_state_holds_no_order_status()
     {
-        var store = new InMemoryStateStore();
+        var store = new SqliteStateStore(_dbPath);
         var chat = new Chat(state: store);
 
         await chat.SayAsync("Where is NS-1042?");
