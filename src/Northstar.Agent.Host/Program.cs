@@ -19,6 +19,7 @@ builder.AddAgentApplicationOptions();
 builder.AddAgent<NorthstarAgent>();
 // SDK turn state (not our conversation state; see docs/state-choices.md).
 builder.Services.AddSingleton<IStorage, MemoryStorage>();
+builder.Services.AddNorthstarAgentServices(builder.Configuration);
 
 var app = builder.Build();
 

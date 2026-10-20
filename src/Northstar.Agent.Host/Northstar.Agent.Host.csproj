@@ -1,6 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <ProjectReference Include="..\Northstar.Agent.Core\Northstar.Agent.Core.csproj" />
+    <ProjectReference Include="..\Northstar.Agent.Actions\Northstar.Agent.Actions.csproj" />
+    <ProjectReference Include="..\Northstar.Agent.Model\Northstar.Agent.Model.csproj" />
+    <ProjectReference Include="..\Northstar.Agent.State\Northstar.Agent.State.csproj" />
+    <ProjectReference Include="..\Northstar.Agent.Orders.Fake\Northstar.Agent.Orders.Fake.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Agents.Hosting.AspNetCore" Version="1.9.205" />
   </ItemGroup>
 

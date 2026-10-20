@@ -1,3 +1,11 @@
 <Solution>
+  <Project Path="src/Northstar.Agent.Actions/Northstar.Agent.Actions.csproj" />
+  <Project Path="src/Northstar.Agent.Core/Northstar.Agent.Core.csproj" />
   <Project Path="src/Northstar.Agent.Host/Northstar.Agent.Host.csproj" />
+  <Project Path="src/Northstar.Agent.Model/Northstar.Agent.Model.csproj" />
+  <Project Path="src/Northstar.Agent.Orders.Fake/Northstar.Agent.Orders.Fake.csproj" />
+  <Project Path="src/Northstar.Agent.State/Northstar.Agent.State.csproj" />
+  <Project Path="tests/Actions.Tests/Actions.Tests.csproj" />
+  <Project Path="tests/Core.Tests/Core.Tests.csproj" />
+  <Project Path="tests/Host.Tests/Host.Tests.csproj" />
 </Solution>
