@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Northstar.Agent.Actions;
 using Northstar.Agent.Host;
+using Northstar.Agent.Model;
 
 namespace Host.Tests;
 
@@ -91,6 +92,20 @@ public sealed class HostFlowTests : IDisposable
 
         var reply = Assert.Single(replies);
         Assert.Equal("Order NS-1042 has shipped with FictionalExpress (tracking FX-000-1042).", reply);
+    }
+
+    [Fact]
+    public async Task Swapping_the_model_provider_leaves_the_host_flow_unchanged()
+    {
+        var client = CreateClient(services: s =>
+        {
+            s.RemoveAll<IModelClient>();
+            s.AddSingleton<IModelClient>(new ScriptedModelClient(new Intent(IntentKind.OrderStatus, "NS-1042")));
+        });
+
+        var replies = await PostAsync(client, Activity("message", "m1", "any words at all"));
+
+        Assert.Equal("Order NS-1042 has shipped with FictionalExpress (tracking FX-000-1042).", Assert.Single(replies));
     }
 
     [Fact]

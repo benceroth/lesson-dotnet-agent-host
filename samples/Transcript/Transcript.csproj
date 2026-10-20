@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Northstar.Agent.Core\Northstar.Agent.Core.csproj" />
+    <ProjectReference Include="..\..\src\Northstar.Agent.Actions\Northstar.Agent.Actions.csproj" />
+    <ProjectReference Include="..\..\src\Northstar.Agent.Model\Northstar.Agent.Model.csproj" />
+    <ProjectReference Include="..\..\src\Northstar.Agent.State\Northstar.Agent.State.csproj" />
+    <ProjectReference Include="..\..\src\Northstar.Agent.Orders.Fake\Northstar.Agent.Orders.Fake.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>
